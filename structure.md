@@ -1,0 +1,22 @@
+* main
+    - content
+    - content-log
+    - write-column
+    - image
+* login
+    - sign-in
+    - sign-up
+    - password-search
+* header
+    - title
+        - title
+        - all-view-button
+        - mention-view-button
+        - user-content-view-button
+    - search
+    - menu
+        - logout
+        - setting
+* right-menu
+    - login-member-list
+* footer
