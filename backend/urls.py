@@ -18,10 +18,12 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 import backend.views
+from backend.views import Login
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^$', backend.views.index, name='index'),
+    url(r'^login/$', Login.as_view({'get': 'get_list'}), name='login'),
 ]
 
 if settings.DEBUG:

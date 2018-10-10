@@ -1,16 +1,23 @@
 <template>
     <div id="contents">
         {{ content }}
+        <div @click="getUsers()">test</div>
     </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
     name: 'contents',
     data() {
         return {
-            content: '메인페이지입니다'
+            content: 'test'
         }
+    },
+    methods: {
+        ...mapActions({
+            getUsers: 'getUsers'
+        }),
     }
 }
 </script>
