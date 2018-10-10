@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
+var VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 // Directory for deployed assets. It should be within our static files path.
 // Backslash at the end is not required.
@@ -13,6 +14,7 @@ var dev_server_addr = 'localhost';
 var dev_server_port = 8001;
 
 module.exports = {
+    mode: 'production',
     entry: ['./frontend/main.js'],
     output: {
         path: path.resolve(__dirname, '.' + dist_dir + '/'),
@@ -21,6 +23,7 @@ module.exports = {
     },
     plugins: [
         new BundleTracker({filename: './webpack-stats.json'}),
+        new VueLoaderPlugin(),
     ],
     module: {
         rules: [
