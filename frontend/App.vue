@@ -1,7 +1,6 @@
 <template>
     <div id="app">
-        <contents v-if="token"></contents>
-        <signIn v-else></signIn>
+        <router-view></router-view>
     </div>
 </template>
 

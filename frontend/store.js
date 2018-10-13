@@ -8,7 +8,7 @@ const apiRoot = 'http://localhost:8000'
 const store = new Vuex.Store({
     state: {
         users: {},
-        token: 'ABFBRHRWWGWRGRGWR'
+        token: ''
     },
     mutations: {
         'GET_USER': function (state, response) {
