@@ -1,25 +1,29 @@
 <template>
     <div id="contents">
         {{ content }}
-        <div @click="getUsers()">test</div>
-        <router-link to="/test">go Test</router-link>
+        <div @click="getToken">test</div>
+        <router-link to="/login">go Test</router-link>
     </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'contents',
     data() {
         return {
-            content: 'test'
+            content: 'test',
+            token: ''
         }
     },
+    computed: {
+        ...mapActions([
+            'getToken'
+        ]),
+    },
     methods: {
-        ...mapActions({
-            getUsers: 'getUsers'
-        }),
+        
     }
 }
 </script>

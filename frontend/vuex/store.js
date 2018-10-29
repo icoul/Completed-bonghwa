@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from './api.js'
+import api from '../api.js'
 
 Vue.use(Vuex)
 const apiRoot = 'http://localhost:8000'
@@ -11,8 +11,8 @@ const store = new Vuex.Store({
         token: ''
     },
     mutations: {
-        'GET_USER': function (state, response) {
-            state.users = response.body
+        'GET_TOKEN': function (state, response) {
+            state.token = response.body.token
         },
         'ADD_USER': function (state, response) {
             state.users.push(response.body)
@@ -33,9 +33,9 @@ const store = new Vuex.Store({
         }
     },
     actions: {
-        getUsers (store) {
-            return api.get(apiRoot + '/login/')
-                .then((response) => store.commit('GET_USER', response))
+        getToken (store) {
+            return api.get(apiRoot + '/auth/')
+                .then((response) => store.commit('GET_TOKEN', response))
                 .catch((error) => store.commit('API_FAIL', error))
         },
     }

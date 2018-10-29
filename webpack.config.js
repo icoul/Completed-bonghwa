@@ -1,7 +1,8 @@
 var path = require('path');
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
-var VueLoaderPlugin = require('vue-loader/lib/plugin')
+var VueLoaderPlugin = require('vue-loader/lib/plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // Directory for deployed assets. It should be within our static files path.
 // Backslash at the end is not required.
@@ -24,6 +25,7 @@ module.exports = {
     plugins: [
         new BundleTracker({filename: './webpack-stats.json'}),
         new VueLoaderPlugin(),
+        new ExtractTextPlugin({filename: 'app.css'})
     ],
     module: {
         rules: [
@@ -52,6 +54,13 @@ module.exports = {
                 options: {
                     name: '[name].[ext]?[hash]'
                 }
+            },
+            {
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: 'css-loader'
+                })
             }
         ]
     },

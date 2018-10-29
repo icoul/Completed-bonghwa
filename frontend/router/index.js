@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import SignIn from '../component/SignIn.vue'
 import Contents from '../component/Contents.vue'
+import Login from '../component/signIn/Login.vue'
+import SignUp from '../component/signIn/SignUp.vue'
+import PassChange from '../component/signIn/PassChange.vue'
 
 Vue.use(Router)
 
@@ -13,9 +15,19 @@ export default new Router({
             component: Contents
         },
         {
-            path: '/test',
-            name: 'SignIn',
-            component: SignIn
+            path: '/login',
+            name: 'Login',
+            component: Login
+        },
+        {
+            path: '/signUp',
+            name: 'SignUp',
+            component: SignUp
+        },
+        {
+            path: '/passChange',
+            name: 'PassChange',
+            component: PassChange
         }
     ]
 })
