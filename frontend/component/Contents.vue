@@ -17,13 +17,11 @@ export default {
             token: ''
         }
     },
-    computed: {
-        ...mapActions([
-            'getToken'
-        ]),
-    },
     methods: {
-        
-    }
+
+    },
+    created () {
+        this.$store.dispatch('setTokenFromServer')
+    },
 }
 </script>

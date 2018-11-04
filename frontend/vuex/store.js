@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import api from '../api.js'
+import router from '../router'
 
 Vue.use(Vuex)
 const apiRoot = 'http://localhost:8000'
@@ -11,11 +12,15 @@ const store = new Vuex.Store({
         token: ''
     },
     mutations: {
-        'GET_TOKEN': function (state, response) {
+        'SET_TOKEN': function (state, response) {
             state.token = response.body.token
+            
+            if (state.token === '') {
+                router.push('Login')
+            }
         },
-        'ADD_USER': function (state, response) {
-            state.users.push(response.body)
+        'CHECK_TOKEN': function (state) {
+            return state.token === ''
         },
         'DELETE_USER': function (state) {
 
@@ -25,17 +30,12 @@ const store = new Vuex.Store({
         }
     },
     getters: {
-        getToken: state => {
-            return state.token
-        },
-        checkToken: (state, getters) => {
-            return getters.getToken !== ''
-        }
+        
     },
     actions: {
-        getToken (store) {
-            return api.get(apiRoot + '/auth/')
-                .then((response) => store.commit('GET_TOKEN', response))
+        async setTokenFromServer (store) {
+            api.get(apiRoot + '/auth/')
+                .then((response) => store.commit('SET_TOKEN', response))
                 .catch((error) => store.commit('API_FAIL', error))
         },
     }
