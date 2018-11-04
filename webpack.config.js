@@ -16,10 +16,10 @@ var dev_server_port = 8001;
 
 module.exports = {
     mode: 'production',
-    entry: ['./frontend/main.js'],
+    entry: ['babel-regenerator-runtime', './frontend/main.js'],
     output: {
         path: path.resolve(__dirname, '.' + dist_dir + '/'),
-        filename: '[name]-[hash].js',
+        filename: '[name].js',
         publicPath: dist_dir + '/',
     },
     plugins: [
