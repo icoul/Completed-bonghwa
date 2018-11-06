@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.urls import path
 
 from backend.views import Auth
 import backend.views
@@ -23,7 +24,8 @@ import backend.views
 urlpatterns = [
     url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^$', backend.views.index, name='index'),
-    url(r'^auth/$', Auth.as_view({'get': 'get_token'})),
+    url(r'^token/$', Auth.as_view({'get': 'get_token'})),
+    path('login/<str:id>/<str:password>/', Auth.as_view({'get': 'login'})),
     #url(r'^login/$', Login.as_view({'get': 'get_list'}), name='login'),
 ]
 
