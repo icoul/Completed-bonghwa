@@ -22,7 +22,7 @@ const store = new Vuex.Store({
             state.token = response.body.token
             
             if (state.token !== '') {
-                router.push('/')
+                router.push('Main')
             }
         },
         'LOGIN_FAIL': function (state) {

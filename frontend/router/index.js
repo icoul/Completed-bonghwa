@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Contents from '../component/Contents.vue'
+import Index from '../component/Index.vue'
+import Main from '../component/Main.vue'
 import Login from '../component/signIn/Login.vue'
 import SignUp from '../component/signIn/SignUp.vue'
 import PassChange from '../component/signIn/PassChange.vue'
@@ -11,8 +12,13 @@ export default new Router({
     routes: [
         {
             path: '/',
-            name: 'Contents',
-            component: Contents
+            name: 'Index',
+            component: Index
+        },
+        {
+            path: '/main',
+            name: 'Main',
+            component: Main
         },
         {
             path: '/login',

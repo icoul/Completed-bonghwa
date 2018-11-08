@@ -1,5 +1,5 @@
 <template>
-    <div id="contents">
+    <div id="main">
         {{ content }}
         <button @click="logout">로그아웃</button>
     </div>
@@ -9,7 +9,7 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-    name: 'contents',
+    name: 'main',
     data() {
         return {
             content: 'test',
