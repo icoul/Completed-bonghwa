@@ -23,7 +23,6 @@ class Auth(viewsets.ModelViewSet):
 
     @list_route(method = ['get'])
     def login(self, request, id, password):
-        
         try:
             user = User.objects.get(is_active=1, username=id, password=password)
         except:
@@ -31,9 +30,12 @@ class Auth(viewsets.ModelViewSet):
             return False
         
         request.session['token'] = 'abdadvaalojeoifjefn'
-        return JsonResponse({'token': 'abdadvaalojeoifjefn'})
+        return JsonResponse({'token': request.session['token']})
 
-        
+    @list_route(method = ['get'])
+    def logout(self, request):
+        request.session['token'] = ''
+        return HttpResponse(status=200)
         
 
 ''' class Login(viewsets.ModelViewSet):

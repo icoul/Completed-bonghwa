@@ -1,8 +1,7 @@
 <template>
     <div id="contents">
         {{ content }}
-        <div @click="getToken">test</div>
-        <router-link to="/login">go Test</router-link>
+        <button @click="logout">로그아웃</button>
     </div>
 </template>
 
@@ -14,13 +13,14 @@ export default {
     data() {
         return {
             content: 'test',
-            token: ''
         }
     },
     methods: {
-
+        logout() {
+            this.$store.dispatch('logout')    
+        }
     },
-    created () {
+    created() {
         this.$store.dispatch('setTokenFromServer')
     },
 }

@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^$', backend.views.index, name='index'),
     url(r'^token/$', Auth.as_view({'get': 'get_token'})),
     path('login/<str:id>/<str:password>/', Auth.as_view({'get': 'login'})),
+    path('logout/', Auth.as_view({'get': 'logout'})),
     #url(r'^login/$', Login.as_view({'get': 'get_list'}), name='login'),
 ]
 

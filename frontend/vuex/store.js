@@ -8,9 +8,7 @@ const apiRoot = 'http://localhost:8000'
 
 const store = new Vuex.Store({
     state: {
-        token: '',
-        loginId: '',
-        loginPassword: ''
+        token: ''
     },
     mutations: {
         'SET_TOKEN': function (state, response) {
@@ -30,8 +28,9 @@ const store = new Vuex.Store({
         'LOGIN_FAIL': function (state) {
             window.alert('로그인에 실패했습니다.');
         },
-        'DELETE_USER': function (state) {
-
+        'LOGOUT': function (state, response) {
+            state.token = ''
+            router.push('Login')
         },
         'API_FAIL': function (state, error) {
             console.log(error)
@@ -50,6 +49,11 @@ const store = new Vuex.Store({
             api.get(apiRoot + '/login/' + map.id + '/' + map.password)
                 .then((response) => store.commit('LOGIN_SUCCESS', response))
                 .catch((error) => store.commit('LOGIN_FAIL', error))
+        },
+        logout (store) {
+            api.get(apiRoot + '/logout/')
+                .then((response) => store.commit('LOGOUT', response))
+                .catch((error) => store.commit('API_FAIL', error))
         }
     }
 })
