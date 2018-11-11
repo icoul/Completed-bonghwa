@@ -7,6 +7,7 @@ from .models import Contents, User
 from .serializer import ContentsSerializer, UserSerializer
 
 import uuid
+from hashlib import sha256
 
 # 초기 페이지
 def index(request):
@@ -29,7 +30,7 @@ class Auth(viewsets.ModelViewSet):
             print('로그인 실패')
             return False
         
-        request.session['token'] = 'abdadvaalojeoifjefn'
+        request.session['token'] = str(uuid.uuid4())
         return JsonResponse({'token': request.session['token']})
 
     @list_route(method = ['get'])

@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import sha256 from 'sha256'
+
 export default {
     name: 'signIn',
     data() {
@@ -19,7 +21,8 @@ export default {
     },
     methods: {
         loginCheck() {
-            var map = {'id': this.id, 'password': this.password}
+            var encryptionPass = sha256(this.password)
+            var map = {'id': this.id, 'password': encryptionPass}
             this.$store.dispatch('loginCheck', map)
         }
     }
