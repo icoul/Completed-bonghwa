@@ -13,7 +13,8 @@ export default {
 
                     return {
                         has (key) { return !!errorBag[key] },
-                        first (key) { return errorBag[key][0] }
+                        first (key) { return errorBag[key][0] },
+                        length () { return Object.keys(JSON.parse(JSON.stringify(errorBag))).length }
                     }
                 },
                 $validator () {
@@ -30,6 +31,10 @@ export default {
                                     context.$delete(context.errorBag, key)
                                 }
                             }
+
+                            return new Promise(function (resolve, reject) {
+                                resolve(context.$errors.length() === 0)
+                            })
                         }
                     }
                 }
