@@ -23,7 +23,7 @@ export default {
                     return {
                         validateAll () {
                             for (const key of validator.validates.keys()) {
-                                const errors = validator.validate(key, context[key])
+                                const errors = validator.validate(key, context.user[key])
 
                                 if (errors.length) {
                                     context.$set(context.errorBag, key, errors)

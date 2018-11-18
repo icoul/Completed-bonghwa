@@ -4,7 +4,7 @@ import validatePlugin from './plugin/validatePlugin'
 import router from './router'
 
 // Vuex
-import store from './vuex/store.js'
+import { store } from './vuex'
 
 Vue.use(validatePlugin)
 
@@ -13,7 +13,7 @@ new Vue(
     {
         el: '#app',
         router,
-        store: store,
+        store,
         render: h => h(App),
         components: { App },
         template: '<App/>'

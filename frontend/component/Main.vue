@@ -1,12 +1,12 @@
 <template>
     <div id="main">
         {{ content }}
-        <button @click="logout">로그아웃</button>
+        <button @click="callLogout">로그아웃</button>
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
     name: 'main',
@@ -15,13 +15,17 @@ export default {
             content: 'test',
         }
     },
+    computed: {
+        ...mapState('account', ['state'])
+    },
     methods: {
-        logout() {
-            this.$store.dispatch('logout')    
+        ...mapActions('account', ['logout']),
+        callLogout() {
+            this.logout()
         }
     },
     created() {
-        this.$store.dispatch('setTokenFromServer')
+        this.setTokenFromServer()
     },
 }
 </script>
