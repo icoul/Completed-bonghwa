@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 import pymysql
 
+# Security Config
+import json
+
+with open('./backend/config.json', 'r') as f:
+    config = json.load(f)
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -80,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bonghwa', 
         'USER': 'root',
-        'PASSWORD': '759461', 
+        'PASSWORD': config['DEFAULT']['ROOT_PASS'], 
         'HOST': 'localhost', 
         'PORT': '3306', 
    }
@@ -128,6 +134,13 @@ WEBPACK_LOADER = {
     }
 }
 
+# Email Setting
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'icoul35@gmail.com'
+EMAIL_HOST_PASSWORD = config['DEFAULT']['EMAIL_PASS']
 
 DEBUG = True
 INTERNAL_IPS = ['127.0.0.1']

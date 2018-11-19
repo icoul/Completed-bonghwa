@@ -22,13 +22,16 @@ from backend.views import Auth
 import backend.views
 
 urlpatterns = [
+    #Admin
     url(r'^admin/', admin.site.urls, name='admin'),
+    #Index
     url(r'^$', backend.views.index, name='index'),
+    #Auth
     url(r'^token/$', Auth.as_view({'get': 'get_token'})),
     path('login/<str:id>/<str:password>/', Auth.as_view({'get': 'login'})),
     path('logout/', Auth.as_view({'get': 'logout'})),
     path('signUp/<str:id>/<str:password>/<str:email>', Auth.as_view({'post': 'signUp'})),
-    #url(r'^login/$', Login.as_view({'get': 'get_list'}), name='login'),
+    path('findPass/<str:id>/<str:email>', Auth.as_view({'post': 'findPass'})),
 ]
 
 if settings.DEBUG:

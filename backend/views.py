@@ -6,18 +6,37 @@ from rest_framework.decorators import list_route
 from .models import Contents, User
 from .serializer import ContentsSerializer, UserSerializer
 
+from django.core.exceptions import ObjectDoesNotExist
+
 import uuid
+import string
+import random
 from django.utils import timezone
 from hashlib import sha256
+from django.core.mail import send_mail
 
 # 초기 페이지
 def index(request):
     return render(request, 'index.html')
 
 # 아이디 중복 체크
-def idDupleCheck(id):
-    return User.objects.filter(is_active = 1, username = id).count()
+def id_duple_check(id):
+    return User.objects.filter(is_active=1, username=id).count()
 
+# 아이디, 이메일 유저 체크
+def find_pass_user_check(id, email):
+    try:
+        return User.objects.filter(is_active=1, username=id, email=email).get()
+    except ObjectDoesNotExist:
+        return '0'
+
+#랜덤 비밀번호 생성
+def pass_generator(size=6):
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(size))
+
+#비밀번호 SHA256으로 변경
+def encrypt_string(value):
+    return sha256(value.encode()).hexdigest()
 
 class Auth(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -53,7 +72,7 @@ class Auth(viewsets.ModelViewSet):
         # message = 회원가입 결과 알림메시지
 
         # 아이디 중복 체크
-        if idDupleCheck(id):
+        if id_duple_check(id):
             return JsonResponse({'result': '0', 'message': '이미 가입된 아이디입니다.'})
 
         try:
@@ -71,6 +90,38 @@ class Auth(viewsets.ModelViewSet):
 
         return JsonResponse({'result': '1', 'message': '회원가입에 성공했습니다.'})
 
+    #비밀번호 찾기
+    @list_route(method = ['post'])
+    def findPass(self, request, id, email):
+        if not find_pass_user_check(id, email):
+            print("not have")
+            return JsonResponse({'result': '0', 'message': '해당되는 아이디, 이메일의 유저가 존재하지 않습니다.'})
+        
+        newPass = pass_generator(6)    #임시 랜덤 비밀번호 생성
+        encryptPass = encrypt_string(newPass)    #임시 비밀번호 SHA256타입으로 변환
+
+        try:
+            result = send_mail(
+                '임시 비밀번호입니다.',
+                id + '님의 임시 비밀번호는 ' + newPass + ' 입니다.',
+                'icoul35@gmail.com',
+                [email],
+                fail_silently=False,
+                auth_user='icoul35@gmail.com',
+                auth_password='ha759461'
+            )
+
+            if not result:
+                return JsonResponse({'result': '0', 'message': '비밀번호 찾기에 실패했습니다.'})
+        except Exception as e:
+            print('send_mail failed')
+            print(e)
+            return JsonResponse({'result': '0', 'message': '비밀번호 찾기에 실패했습니다.'})
+        
+        #임시 비밀번호 저장
+        result = User.objects.filter(is_active=1, username=id, email=email).update(password=encryptPass)
+
+        return JsonResponse({'result': '1', 'message': '임시 비밀번호를 이메일로 발송했습니다.'})
 
 ''' class Login(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_active=1).values()

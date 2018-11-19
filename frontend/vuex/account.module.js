@@ -65,6 +65,11 @@ const actions = {
         api.post(`${apiRoot}/signUp/${user.id}/${user.password}/${user.email}`)
             .then((response) => store.commit('SIGNUP_RESULT', response))
             .catch((error) => store.commit('API_FAIL', error))
+    },
+    findPass (store, info) {
+        api.post(`${apiRoot}/findPass/${info.id}/${info.email}`)
+            .then((response) => store.commit('SIGNUP_RESULT', response))
+            .catch((error) => store.commit('API_FAIL', error))
     }
 };
 
