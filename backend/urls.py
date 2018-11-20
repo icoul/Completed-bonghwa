@@ -18,7 +18,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.urls import path
 
-from backend.views import Auth
+from backend.views import Auth, Post
 import backend.views
 
 urlpatterns = [
@@ -27,11 +27,13 @@ urlpatterns = [
     #Index
     url(r'^$', backend.views.index, name='index'),
     #Auth
-    url(r'^token/$', Auth.as_view({'get': 'get_token'})),
-    path('login/<str:id>/<str:password>/', Auth.as_view({'get': 'login'})),
+    path('user/', Auth.as_view({'get': 'get_user'})),
+    path('login/<str:username>/<str:password>/', Auth.as_view({'get': 'login'})),
     path('logout/', Auth.as_view({'get': 'logout'})),
-    path('signUp/<str:id>/<str:password>/<str:email>', Auth.as_view({'post': 'signUp'})),
-    path('findPass/<str:id>/<str:email>', Auth.as_view({'post': 'findPass'})),
+    path('signUp/<str:username>/<str:password>/<str:email>', Auth.as_view({'post': 'signUp'})),
+    path('findPass/<str:username>/<str:email>', Auth.as_view({'post': 'find_pass'})),
+    #Posts
+    path('getPosts/', Post.as_view({'get': 'get_posts'})),
 ]
 
 if settings.DEBUG:

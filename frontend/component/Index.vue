@@ -4,17 +4,17 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
     name: 'index',
-    data() {
-        return {
-      
-        }
+    methods: {
+        ...mapActions('account', {
+            setUserFromServer: 'setUserFromServer'
+        })
     },
     created() {
-        this.$store.dispatch('setTokenFromServer')
+        this.setUserFromServer();
     },
 }
 </script>

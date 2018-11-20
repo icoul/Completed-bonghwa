@@ -1,6 +1,13 @@
 <template>
     <div id="main">
-        {{ content }}
+        <div>
+            <input type="text" v-model="post.content" />
+            <button @click="sendPost(post)">전송</button>
+        </div>
+        <ul>
+            <li v-for="post in posts" :key="post.no">
+            </li>
+        </ul>
         <button @click="callLogout">로그아웃</button>
     </div>
 </template>
@@ -12,20 +19,36 @@ export default {
     name: 'main',
     data() {
         return {
-            content: 'test',
+            post: {
+                content: '',
+                writer: ''
+            }
         }
     },
     computed: {
-        ...mapState('account', ['state'])
+        ...mapState({
+            account: state => state.account.user,
+            users: state => state.users,
+            posts: state => state.posts.posts
+        })
     },
     methods: {
-        ...mapActions('account', ['logout']),
-        callLogout() {
-            this.logout()
-        }
+        ...mapActions(
+            'account', {
+                callLogout: 'logout',
+                setUserFromServer: 'setUserFromServer'
+            }
+        ),
+        ...mapActions(
+            'posts', {
+                getPosts: 'getPosts'
+            }
+        )
     },
     created() {
-        this.setTokenFromServer()
+        this.setUserFromServer();
+        this.getPosts();
+        console.log(this.posts)
     },
 }
 </script>

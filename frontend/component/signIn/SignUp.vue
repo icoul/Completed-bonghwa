@@ -2,7 +2,7 @@
     <div id="signUp">
         <form @submit.prevent="callSignUp">
             <ul>
-                <li>id : <input type="text" name="id" v-model="user.id" v-validate="'required'" /><p v-if="$errors.has('id')" v-text="$errors.first('id')"></p></li>
+                <li>username : <input type="text" name="username" v-model="user.username" v-validate="'required'" /><p v-if="$errors.has('username')" v-text="$errors.first('username')"></p></li>
                 <li>password : <input type="password" name="password" v-model="user.password" v-validate="'required|minLen6'" /><p v-if="$errors.has('password')" v-text="$errors.first('password')"></p></li>
                 <li>password check : <input type="password" name="checkPassword" v-model="user.checkPassword" v-validate="'required|equalPass'" /><p v-if="$errors.has('checkPassword')" v-text="$errors.first('checkPassword')"></p></li>
                 <li>email : <input type="text" name="email" v-model="user.email" v-validate="'required'" /><p v-if="$errors.has('email')" v-text="$errors.first('email')"></p></li>
@@ -22,7 +22,7 @@ export default {
     data() {
         return {
             user : {
-                id: '1',
+                username: '1',
                 password: '111111',
                 checkPassword: '111111',
                 email: '111111',

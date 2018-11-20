@@ -4,23 +4,22 @@ import router from '../router'
 const apiRoot = 'http://localhost:8000'
 
 const state = {
-    token: '',
     user: {}
 };
 
 const mutations = {
-    'SET_TOKEN': function (state, response) {
-        state.token = response.body.token;
+    'SET_USER': function (state, response) {
+        state.user = response.body.user;
 
-        if (state.token === '') {
-            router.push('Login');
+        if (JSON.stringify(state.user) === '{}') {
+            router.push('login');
         }
     },
     'LOGIN_SUCCESS': function (state, response) {
-        state.token = response.body.token;
+        state.user = response.body.user;
 
-        if (state.token !== '') {
-            router.push('Main');
+        if (JSON.stringify(state.user) !== '{}') {
+            router.push('main');
         }
     },
     'SIGNUP_RESULT': function (state, response) {
@@ -30,15 +29,15 @@ const mutations = {
         window.alert(message);
 
         if (result === '1') {
-            router.push('Login');
+            router.push('login');
         }
     },
     'LOGIN_FAIL': function (state) {
         window.alert('로그인에 실패했습니다.');
     },
     'LOGOUT': function (state, response) {
-        state.token = '';
-        router.push('Login');
+        state.user = {};
+        router.push('login');
     },
     'API_FAIL': function (state, error) {
         console.log(error);
@@ -46,13 +45,13 @@ const mutations = {
 };
 
 const actions = {
-    setTokenFromServer (store) {
-        api.get(apiRoot + '/token/')
-            .then((response) => store.commit('SET_TOKEN', response))
+    setUserFromServer (store) {
+        api.get(apiRoot + '/user/')
+            .then((response) => store.commit('SET_USER', response))
             .catch((error) => store.commit('API_FAIL', error))
     },
     loginCheck (store, map) {
-        api.get(apiRoot + '/login/' + map.id + '/' + map.password)
+        api.get(apiRoot + '/login/' + map.username + '/' + map.password)
             .then((response) => store.commit('LOGIN_SUCCESS', response))
             .catch((error) => store.commit('LOGIN_FAIL', error))
     },
@@ -62,12 +61,12 @@ const actions = {
             .catch((error) => store.commit('API_FAIL', error))
     },
     signUp (store, user) {
-        api.post(`${apiRoot}/signUp/${user.id}/${user.password}/${user.email}`)
+        api.post(`${apiRoot}/signUp/${user.username}/${user.password}/${user.email}`)
             .then((response) => store.commit('SIGNUP_RESULT', response))
             .catch((error) => store.commit('API_FAIL', error))
     },
     findPass (store, info) {
-        api.post(`${apiRoot}/findPass/${info.id}/${info.email}`)
+        api.post(`${apiRoot}/findPass/${info.username}/${info.email}`)
             .then((response) => store.commit('SIGNUP_RESULT', response))
             .catch((error) => store.commit('API_FAIL', error))
     }

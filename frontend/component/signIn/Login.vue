@@ -1,6 +1,6 @@
 <template>
     <div id="login">
-        <input type="text" v-model="id" />
+        <input type="text" v-model="username" />
         <input type="password" v-model="password" />
         <a @click="login">로그인</a>
         <router-link to = "/signUp">회원가입</router-link>
@@ -16,7 +16,7 @@ export default {
     name: 'signIn',
     data() {
         return {
-            id: 'a',
+            username: 'a',
             password: 'b'    
         }
     },
@@ -27,7 +27,7 @@ export default {
         ...mapActions('account', ['loginCheck']),
         login() {
             var encryptionPass = sha256(this.password)
-            var map = {'id': this.id, 'password': encryptionPass}
+            var map = {'username': this.username, 'password': encryptionPass}
             this.loginCheck(map)
         }
     }

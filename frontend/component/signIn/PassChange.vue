@@ -1,7 +1,7 @@
 <template>
     <div id="passChange">
         <form @submit.prevent="callFindPass">
-            <input type="text" v-model="info.id" />
+            <input type="text" v-model="info.username" />
             <input type="text" v-model="info.email" />
             
             <button>비밀번호 찾기</button>
@@ -18,7 +18,7 @@ export default {
     data() {
         return {
             info: {
-                id: '1',
+                username: '1',
                 email: 'icoul@naver.com',
             }
         }
