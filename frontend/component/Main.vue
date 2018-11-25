@@ -3,6 +3,7 @@
         <div>
             <input type="text" name="content" v-model="post.content" v-bind:placeholder="error" />
             <button @click="callSendPost" v-bind:disabled="post.content == ''">전송</button>
+            <a href="*">[이미지]</a><span>{{ imageName }}</span>
         </div>
         <ul>
             <li v-for="post in posts" :key="post.no">
@@ -24,7 +25,8 @@ export default {
                 content: '',
                 writer: ''
             },
-            error: ''
+            error: '',
+            imageNAme: ''
         }
     },
     computed: {
@@ -63,6 +65,8 @@ export default {
             if(valid) {
                 this.getPosts();
                 this.post.writer = this.account.username;
+            } else {
+                this.$router.push('login');
             }
         });
     },

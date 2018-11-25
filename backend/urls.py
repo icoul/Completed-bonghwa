@@ -28,10 +28,10 @@ urlpatterns = [
     url(r'^$', backend.views.index, name='index'),
     #Auth
     url(r'^user/$', Auth.as_view({'get': 'get_user'})),
-    url(r'^login/(?P<username>\w+)/(?P<password>([\W\w]+))$', Auth.as_view({'get': 'login'})),
+    url(r'^login/(?P<username>\w+)/(?P<password>([\W\w]+))/$', Auth.as_view({'get': 'login'})),
     url(r'^logout/$', Auth.as_view({'get': 'logout'})),
     url(r'^signUp/(?P<username>\w+)/(?P<password>([\W\w]+))/(?P<email>([\w]+@[\w]+.[\w]+))$', Auth.as_view({'post': 'signUp'})),
-    url(r'^findPass/(?P<username>\w+)/(?P<email>([\w]+@[\w]+.[\w]+))', Auth.as_view({'post': 'find_pass'})),
+    url(r'^findPass/(?P<username>\w+)/(?P<email>([\w]+@[\w]+.[\w]+))$', Auth.as_view({'post': 'find_pass'})),
     #Posts
     url(r'^getPosts/$', Post.as_view({'get': 'get_posts'})),
     url(r'^sendPost/(?P<content>([\W\w]+))/(?P<writer>(\w+))$', Post.as_view({'post': 'send_post'})),

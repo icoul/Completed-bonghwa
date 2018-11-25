@@ -56,8 +56,9 @@ class Auth(viewsets.ModelViewSet):
     def login(self, request, username, password):
         try:
             query = User.objects.get(is_active=1, username=username, password=password)
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist as e:
             print('login failed')
+            print(e)
             return JsonResponse({'user': {}})
         
         user = {'id': query.id, 'username': query.username, 'email': query.email, 'is_staff': query.is_staff}

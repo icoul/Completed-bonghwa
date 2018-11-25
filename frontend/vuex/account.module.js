@@ -22,6 +22,8 @@ const mutations = {
 
         if (JSON.stringify(state.user) !== '{}') {
             router.push('main');
+        } else {
+            window.alert('로그인에 실패했습니다.');
         }
     },
     'SIGNUP_RESULT': function (state, response) {
@@ -54,10 +56,10 @@ const actions = {
                     state.user = response.body.user;
 
                     if (typeof state.user === 'undefined' || JSON.stringify(state.user) === '{}') {
-                        router.push('login');
+                        resolve(false);
+                    } else {
+                        resolve(true);
                     }
-
-                    resolve(true);
                 })
                 .catch((error) => {
                     store.commit('API_FAIL', error)
@@ -65,7 +67,7 @@ const actions = {
         })
     },
     loginCheck (store, map) {
-        api.get(apiRoot + '/login/' + map.username + '/' + map.password)
+        api.get(apiRoot + `/login/${map.username}/${map.password}`)
             .then((response) => store.commit('LOGIN_SUCCESS', response))
             .catch((error) => store.commit('LOGIN_FAIL', error))
     },

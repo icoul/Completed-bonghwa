@@ -5,6 +5,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import router from 'vue-router'
 
 export default {
     name: 'index',
@@ -14,7 +15,13 @@ export default {
         })
     },
     created() {
-        this.setUserFromServer();
+        this.setUserFromServer().then(valid => {
+            if (valid) {
+                this.$router.push('main');
+            } else {
+                this.$router.push('login');
+            }
+        });
     },
 }
 </script>
