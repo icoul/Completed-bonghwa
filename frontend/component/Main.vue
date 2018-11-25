@@ -1,39 +1,26 @@
 <template>
     <div id="main">
-        <div>
-            <input type="text" name="content" v-model="post.content" v-bind:placeholder="error" />
-            <button @click="callSendPost" v-bind:disabled="post.content == ''">전송</button>
-            <a href="*">[이미지]</a><span>{{ imageName }}</span>
-        </div>
-        <ul>
-            <li v-for="post in posts" :key="post.no">
-                {{ post.contents }} {{ post.username }} {{ post.created_date }}
-            </li>
-        </ul>
+        <write-form ref="writer"></write-form>
+        <content-list ref="content"></content-list>
         <button @click="callLogout">로그아웃</button>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
+import WriteForm from './contents/WriteForm.vue'
+import ContentList from './contents/ContentList.vue'
 
 export default {
     name: 'main',
-    data() {
-        return {
-            post: {
-                content: '',
-                writer: ''
-            },
-            error: '',
-            imageNAme: ''
-        }
+    components: {
+        WriteForm,
+        ContentList
     },
     computed: {
         ...mapState({
             account: state => state.account.user,
             users: state => state.users,
-            posts: state => state.posts.posts
         })
     },
     methods: {
@@ -43,28 +30,12 @@ export default {
                 setUserFromServer: 'setUserFromServer'
             }
         ),
-        ...mapActions(
-            'posts', {
-                getPosts: 'getPosts',
-                sendPost: 'sendPost'
-            }
-        ),
-        callSendPost() {
-            this.sendPost(this.post).then(({result, message}) => {
-                if(result == '0') {
-                    alert(message)
-                } else {
-                    this.getPosts();
-                    this.post.content = '';
-                }
-            });
-        }
     },
     created() {
         this.setUserFromServer().then(valid => {
             if(valid) {
-                this.getPosts();
-                this.post.writer = this.account.username;
+                this.$refs.content.getPosts();
+                this.$refs.writer.post.writer = this.account.username;
             } else {
                 this.$router.push('login');
             }
