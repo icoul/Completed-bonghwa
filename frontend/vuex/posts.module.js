@@ -11,7 +11,7 @@ const state = {
 
 const mutations = {
     'SET_POST': function (state, response) {
-        state.posts = response.body.posts
+        state.posts = response.body.posts;
     },
     'API_FAIL': function (state, error) {
         console.log(error);
@@ -23,6 +23,17 @@ const actions = {
         api.get(apiRoot + '/getPosts/')
             .then((response) => store.commit('SET_POST', response))
             .catch((error) => store.commit('API_FAIL', error))
+    },
+    sendPost (store, post) {
+        return new Promise((resolve, reject) => {
+            api.post(apiRoot + `/sendPost/${post.content}/${post.writer}`)
+                .then(response => {
+                    resolve({ result: response.result, message: response.message });
+                })
+                .catch((error) => {
+                    store.commit('API_FAIL', error)
+                })
+        })
     }
 };
 

@@ -48,7 +48,8 @@ class Auth(viewsets.ModelViewSet):
         if (not 'user' in request.session):
             request.session['user'] = {}
 
-        return JsonResponse({'user': request.session['user']})
+        user = request.session['user']
+        return JsonResponse({'user': user})
 
     #로그인
     @list_route(method = ['get'])
@@ -61,8 +62,8 @@ class Auth(viewsets.ModelViewSet):
         
         user = {'id': query.id, 'username': query.username, 'email': query.email, 'is_staff': query.is_staff}
         request.session['user'] = user
-        print(request.session['user'])
-        return JsonResponse({'user': request.session['user']})
+
+        return JsonResponse({'user': user})
 
     #로그아웃
     @list_route(method = ['get'])
@@ -81,7 +82,7 @@ class Auth(viewsets.ModelViewSet):
             return JsonResponse({'result': '0', 'message': '이미 가입된 아이디입니다.'})
 
         try:
-            user = User(username = username,                      # 계정명
+            user = User(username = username,                # 계정명
                         password = password,                # 계정 비밀번호
                         email = email,                      # 이메일
                         is_superuser = 0,                   # 운영자 여부
@@ -135,3 +136,22 @@ class Post(viewsets.ModelViewSet):
         posts = list(Contents.objects.all().order_by('-created_date').values())
         
         return JsonResponse({'posts': posts})
+
+    #글 등록
+    @list_route(methods= ['post'])
+    def send_post(self, request, content, writer):
+        # 아이디 중복 체크
+        if not username_duple_check(writer):
+            return JsonResponse({'result': '0', 'message': '올바른 계정이 아닙니다. 재로그인 후 다시 시도해주세요.'})
+
+        try:
+            content = Contents(contents = content,                # 내용
+                               username = writer,                 # 계정명
+                               created_date = timezone.now())     # 작성일
+            content.save()
+        except Exception as e:
+            print('Send post failed')
+            print(e)
+            return JsonResponse({'result': '0', 'message': '포스트 업로드에 실패했습니다.'})
+        
+        return JsonResponse({'result': '1', 'message': ''})

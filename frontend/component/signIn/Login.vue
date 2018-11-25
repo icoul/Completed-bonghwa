@@ -16,8 +16,8 @@ export default {
     name: 'signIn',
     data() {
         return {
-            username: 'a',
-            password: 'b'    
+            username: '1',
+            password: '111111'    
         }
     },
     computed: {

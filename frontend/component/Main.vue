@@ -1,11 +1,12 @@
 <template>
     <div id="main">
         <div>
-            <input type="text" v-model="post.content" />
-            <button @click="sendPost(post)">전송</button>
+            <input type="text" name="content" v-model="post.content" v-bind:placeholder="error" />
+            <button @click="callSendPost" v-bind:disabled="post.content == ''">전송</button>
         </div>
         <ul>
             <li v-for="post in posts" :key="post.no">
+                {{ post.contents }} {{ post.username }} {{ post.created_date }}
             </li>
         </ul>
         <button @click="callLogout">로그아웃</button>
@@ -22,7 +23,8 @@ export default {
             post: {
                 content: '',
                 writer: ''
-            }
+            },
+            error: ''
         }
     },
     computed: {
@@ -41,14 +43,28 @@ export default {
         ),
         ...mapActions(
             'posts', {
-                getPosts: 'getPosts'
+                getPosts: 'getPosts',
+                sendPost: 'sendPost'
             }
-        )
+        ),
+        callSendPost() {
+            this.sendPost(this.post).then(({result, message}) => {
+                if(result == '0') {
+                    alert(message)
+                } else {
+                    this.getPosts();
+                    this.post.content = '';
+                }
+            });
+        }
     },
     created() {
-        this.setUserFromServer();
-        this.getPosts();
-        console.log(this.posts)
+        this.setUserFromServer().then(valid => {
+            if(valid) {
+                this.getPosts();
+                this.post.writer = this.account.username;
+            }
+        });
     },
 }
 </script>

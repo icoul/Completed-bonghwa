@@ -11,9 +11,11 @@ const mutations = {
     'SET_USER': function (state, response) {
         state.user = response.body.user;
 
-        if (JSON.stringify(state.user) === '{}') {
+        if (typeof state.user === 'undefined' || JSON.stringify(state.user) === '{}') {
             router.push('login');
         }
+
+        return true
     },
     'LOGIN_SUCCESS': function (state, response) {
         state.user = response.body.user;
@@ -46,9 +48,21 @@ const mutations = {
 
 const actions = {
     setUserFromServer (store) {
-        api.get(apiRoot + '/user/')
-            .then((response) => store.commit('SET_USER', response))
-            .catch((error) => store.commit('API_FAIL', error))
+        return new Promise((resolve, reject) => {
+            api.get(apiRoot + '/user/')
+                .then(response => {
+                    state.user = response.body.user;
+
+                    if (typeof state.user === 'undefined' || JSON.stringify(state.user) === '{}') {
+                        router.push('login');
+                    }
+
+                    resolve(true);
+                })
+                .catch((error) => {
+                    store.commit('API_FAIL', error)
+                })
+        })
     },
     loginCheck (store, map) {
         api.get(apiRoot + '/login/' + map.username + '/' + map.password)
