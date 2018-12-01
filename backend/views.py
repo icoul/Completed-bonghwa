@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 
+from .forms import UploadFileForm
 from .models import Contents, User
 from .serializer import ContentsSerializer, UserSerializer
 
@@ -38,6 +39,12 @@ def pass_generator(size=6):
 #비밀번호 SHA256으로 변경
 def encrypt_string(value):
     return sha256(value.encode()).hexdigest()
+
+#파일 업로드
+def handle_uploaded_file(f, fname):
+    with open('./static/image/' + fname, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
 
 class Auth(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -134,25 +141,48 @@ class Post(viewsets.ModelViewSet):
     #글 가져오기
     @list_route(methods= ['get'])
     def get_posts(self, request):
-        posts = list(Contents.objects.all().order_by('-created_date').values())
+        posts = list(Contents.objects.filter(deleted=0).order_by('-created_date').values())
         
         return JsonResponse({'posts': posts})
 
     #글 등록
     @list_route(methods= ['post'])
-    def send_post(self, request, content, writer):
+    def send_post(self, request):
+        writer = request.session['user']['username']
+        
         # 아이디 중복 체크
         if not username_duple_check(writer):
             return JsonResponse({'result': '0', 'message': '올바른 계정이 아닙니다. 재로그인 후 다시 시도해주세요.'})
 
-        try:
-            content = Contents(contents = content,                # 내용
-                               username = writer,                 # 계정명
-                               created_date = timezone.now())     # 작성일
-            content.save()
-        except Exception as e:
-            print('Send post failed')
-            print(e)
-            return JsonResponse({'result': '0', 'message': '포스트 업로드에 실패했습니다.'})
+        form = UploadFileForm(request.POST, request.FILES)
         
+        if form.is_valid():
+            filename = ''
+            if 'file' in request.FILES:
+                filename = request.FILES['file'].name
+                handle_uploaded_file(request.FILES['file'], filename)
+
+            try:
+                content = Contents(contents = request.POST['contents'],    # 내용
+                                username = writer,                         # 계정명
+                                image = filename,                          # 이미지 이름
+                                created_date = timezone.now())             # 작성일
+                content.save()
+            except Exception as e:
+                print('Send post failed')
+                print(e)
+                return JsonResponse({'result': '0', 'message': '포스트 업로드에 실패했습니다.'})            
+
         return JsonResponse({'result': '1', 'message': ''})
+
+    #글 삭제
+    @list_route(methods= ['post'])
+    def delete_post(self, request, id):
+        try:
+            Contents.objects.filter(id=id).update(deleted=1)
+        except Exception as e:
+            print('Delete post failed')
+            print(e)
+            return JsonResponse({'result': 'false'})            
+
+        return JsonResponse({'result': 'true'})

@@ -34,7 +34,8 @@ urlpatterns = [
     url(r'^findPass/(?P<username>\w+)/(?P<email>([\w]+@[\w]+.[\w]+))$', Auth.as_view({'post': 'find_pass'})),
     #Posts
     url(r'^getPosts/$', Post.as_view({'get': 'get_posts'})),
-    url(r'^sendPost/(?P<content>([\W\w]+))/(?P<writer>(\w+))$', Post.as_view({'post': 'send_post'})),
+    url(r'^sendPost$', Post.as_view({'post': 'send_post'})),
+    url(r'^deletePost/(?P<id>(\d+))$', Post.as_view({'post': 'delete_post'}))
 ]
 
 if settings.DEBUG:

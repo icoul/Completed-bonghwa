@@ -1,5 +1,6 @@
 import api from '../api.js'
 import router from '../router'
+import uploads from '../service/uploads'
 
 const apiRoot = 'http://localhost:8000'
 
@@ -24,11 +25,23 @@ const actions = {
             .then((response) => store.commit('SET_POST', response))
             .catch((error) => store.commit('API_FAIL', error))
     },
-    sendPost (store, post) {
+    sendPost (store, form) {
         return new Promise((resolve, reject) => {
-            api.post(apiRoot + `/sendPost/${post.content}/${post.writer}`)
+            uploads.uploadImage(form,
+                response => {
+                    resolve(true);
+                },
+                errors => {
+                    store.commit('API_FAIL')
+                }
+            )
+        })
+    },
+    deletePost (store, id) {
+        return new Promise((resolve, reject) => {
+            api.post(apiRoot + `/deletePost/${id}`)
                 .then(response => {
-                    resolve({ result: response.result, message: response.message });
+                    resolve(response.body.result);
                 })
                 .catch((error) => {
                     store.commit('API_FAIL', error)

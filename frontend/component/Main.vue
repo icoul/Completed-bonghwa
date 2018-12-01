@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import WriteForm from './contents/WriteForm.vue'
 import ContentList from './contents/ContentList.vue'
 

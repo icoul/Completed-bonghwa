@@ -1,18 +1,29 @@
 <template>
     <div id="contentList">
         <ul>
-            <li v-for="post in posts" :key="post.no">
-                {{ post.contents }} {{ post.username }} {{ post.created_date }}
-            </li>
+            <content-view
+                v-for="post in posts.slice(0, 10)" 
+                :key="post.id"
+                :id="post.id"
+                :contents="post.contents"
+                :username="post.username"
+                :createdDate="post.created_date"
+                :image="post.image"
+                :imageOpen="false"
+            ></content-view>
         </ul>
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import ContentView from './ContentView.vue'
 
 export default {
     name: 'contentList',
+    components: {
+        ContentView
+    },
     computed: {
         ...mapState({
             posts: state => state.posts.posts

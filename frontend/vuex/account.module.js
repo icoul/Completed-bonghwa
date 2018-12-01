@@ -7,6 +7,12 @@ const state = {
     user: {}
 };
 
+const getters = {
+    getUsername: state => {
+        return state.user.username
+    }
+}
+
 const mutations = {
     'SET_USER': function (state, response) {
         state.user = response.body.user;
@@ -91,6 +97,7 @@ const actions = {
 export const account = {
     namespaced: true,
     state,
+    getters,
     actions,
     mutations
 };
