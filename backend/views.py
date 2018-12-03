@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import uuid
 import string
 import random
+from time import strftime
 from django.utils import timezone
 from hashlib import sha256
 from django.core import serializers
@@ -143,6 +144,11 @@ class Post(viewsets.ModelViewSet):
     def get_posts(self, request):
         posts = list(Contents.objects.filter(deleted=0).order_by('-created_date').values())
         
+        #날짜 포맷 String으로 변경
+        for post in posts:
+            post['convert_date'] = post['created_date'].strftime("%Y. %m. %d %H:%M:%S")
+            post['created_date'] = post['created_date'].strftime("%Y%m%d%H%M%S")
+
         return JsonResponse({'posts': posts})
 
     #글 등록

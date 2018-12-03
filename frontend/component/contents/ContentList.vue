@@ -8,6 +8,7 @@
                 :contents="post.contents"
                 :username="post.username"
                 :createdDate="post.created_date"
+                :convertDate="post.convert_date"
                 :image="post.image"
                 :imageOpen="false"
             ></content-view>

@@ -1,9 +1,11 @@
 <template>
     <li>
-        {{ contents }} {{ username }} {{ createdDate }}
+        {{ username }} 
+        {{ contents }}
         <span 
             v-if="image"
-            @click="viewImage">[이미지]</span>
+            @click="viewImage">[이미지]</span> 
+        {{ convertDate }}
         <span 
             v-if="myPost"
             @click="deletePost">[x]</span>
@@ -19,7 +21,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'contentView',
     props: [
-        "id", "contents", "username", "createdDate", "image", "imageOpen"
+        "id", "contents", "username", "createdDate", "convertDate", "image", "imageOpen"
     ],
     computed: {
         myPost() {
