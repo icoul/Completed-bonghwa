@@ -27,14 +27,13 @@ const actions = {
     },
     sendPost (store, form) {
         return new Promise((resolve, reject) => {
-            uploads.uploadImage(form,
-                response => {
-                    resolve(true);
-                },
-                errors => {
-                    store.commit('API_FAIL')
-                }
-            )
+            api.post(apiRoot + `/sendPost`, form)
+                .then(response => {
+                    resolve(response.body.result);
+                })
+                .catch((error) => {
+                    store.commit('API_FAIL', error)
+                })
         })
     },
     deletePost (store, id) {
