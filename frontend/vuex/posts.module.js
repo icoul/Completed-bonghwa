@@ -1,6 +1,5 @@
 import api from '../api.js'
 import router from '../router'
-import uploads from '../service/uploads'
 
 const apiRoot = 'http://localhost:8000'
 
