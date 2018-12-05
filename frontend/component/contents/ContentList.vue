@@ -7,9 +7,11 @@
                 :id="post.id"
                 :contents="post.contents"
                 :username="post.username"
-                :createdDate="post.created_date"
+                :createdDate="post.createdDate"
                 :convertDate="post.convert_date"
                 :image="post.image"
+                :mentionIndex="post.mentionIndex"
+                :mentionDepth="post.mentionDepth"
                 :imageOpen="false"
             ></content-view>
         </ul>

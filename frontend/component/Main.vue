@@ -30,12 +30,14 @@ export default {
                 setUserFromServer: 'setUserFromServer'
             }
         ),
+        sendMention(username) {
+            alert(username);
+        }
     },
     created() {
         this.setUserFromServer().then(valid => {
             if(valid) {
                 this.$refs.content.getPosts();
-                this.$refs.writer.post.writer = this.account.username;
             } else {
                 this.$router.push('login');
             }

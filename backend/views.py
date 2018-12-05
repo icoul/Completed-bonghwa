@@ -142,12 +142,12 @@ class Post(viewsets.ModelViewSet):
     #글 가져오기
     @list_route(methods= ['get'])
     def get_posts(self, request):
-        posts = list(Contents.objects.filter(deleted=0).order_by('-created_date').values())
+        posts = list(Contents.objects.filter(deleted=0).order_by('-createdDate').values())
         
         #날짜 포맷 String으로 변경
         for post in posts:
-            post['convert_date'] = post['created_date'].strftime("%Y. %m. %d %H:%M:%S")
-            post['created_date'] = post['created_date'].strftime("%Y%m%d%H%M%S")
+            post['convert_date'] = post['createdDate'].strftime("%Y. %m. %d %H:%M:%S")
+            post['createdDate'] = post['createdDate'].strftime("%Y%m%d%H%M%S")
 
         return JsonResponse({'posts': posts})
 
@@ -164,15 +164,17 @@ class Post(viewsets.ModelViewSet):
         
         if form.is_valid():
             filename = ''
-            if 'file' in request.FILES:
-                filename = request.FILES['file'].name
-                handle_uploaded_file(request.FILES['file'], filename)
-
+            if 'image' in request.FILES:
+                filename = request.FILES['image'].name
+                handle_uploaded_file(request.FILES['image'], filename)
+            
             try:
-                content = Contents(contents = request.POST['contents'],    # 내용
+                content = Contents(contents = request.POST['content'],    # 내용
                                 username = writer,                         # 계정명
                                 image = filename,                          # 이미지 이름
-                                created_date = timezone.now())             # 작성일
+                                mentionIndex = request.POST['mentionIndex'],
+                                mentionDepth = request.POST['mentionDepth'],
+                                createdDate = timezone.now())              # 작성일
                 content.save()
             except Exception as e:
                 print('Send post failed')

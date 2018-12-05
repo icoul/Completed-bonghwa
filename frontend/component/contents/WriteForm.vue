@@ -12,7 +12,7 @@
                 v-bind:disabled="post.content.length == 0"
             >전송</button>
             <a href="*" >[이미지]</a>
-            <span>{{ post.imageName }}</span>
+            <span>{{ post.image.name }}</span>
             <input 
                 type="file" 
                 name="image" 
@@ -23,7 +23,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import ContentList from './ContentList.vue'
+import EventBus from '../../service/EventBus'
 
 export default {
     name: 'writeForm',
@@ -31,12 +31,15 @@ export default {
         return {
             post: {
                 content: '',
-                writer: '',
-                imageName: ''
+                mentionIndex: 0,
+                mentionDepth: 0,
+                image: new Object()
             },
-            imageForm: new FormData(),
             error: '',
         }
+    },
+    created() {
+        EventBus.$on('sendUsername', this.sendUsername);
     },
     methods: {
         ...mapActions(
@@ -49,16 +52,25 @@ export default {
         initWriteForm() {
             this.post = {
                 content: '',
-                writer: '',
-                imageName: ''
+                mentionIndex: 0,
+                mentionDepth: 0,
+                image: new Object()
             };
-            this.imageForm = new FormData();
         },
         callSendPost() {
-            this.imageForm.append('contents', this.post.content);
-            this.sendPost(this.imageForm).then(({result, message}) => {
+            // 멘션을 보내는 상태인지 체크. @id 가 없으면 index, depth 초기화
+            if(!this.mentionCheck()) {
+                this.post.mentionIndex = 0;
+                this.post.mentionDepth = 0;
+            }
+
+            console.log(this.post)
+            // FormData에 데이터 삽입
+            const form = new FormData();
+            Object.keys(this.post).forEach(key => form.append(key, this.post[key]));
+            this.sendPost(form).then(({result, message}) => {
                 if(result == '0') {
-                    alert(message)
+                    alert(message);
                 } else {
                     this.getPosts();
                     this.initWriteForm();
@@ -69,10 +81,18 @@ export default {
             if (!files.length) {
                 return;
             }
-
-            this.post.imageName = files[0].name;
-            this.imageForm.append('file', files[0], files[0].name);
+            
+            this.post.image = files[0];
         },
+        sendUsername(map) {
+            this.post.content = `@${map.username} ${this.post.content}`;
+            this.post.mentionIndex = (map.index == 0) ? map.id : map.index;
+            this.post.mentionDepth = (map.id == 0) ? 0 : Number(map.depth) + 1;
+        },
+        mentionCheck() {
+            const re = /(@[\w]+ )/;
+            return re.exec(this.post.content)
+        }
     },
 }
 </script>
