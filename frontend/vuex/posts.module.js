@@ -45,6 +45,17 @@ const actions = {
                     store.commit('API_FAIL', error)
                 })
         })
+    },
+    getMentions (store, id) {
+        return new Promise((resolve, reject) => {
+            api.get(apiRoot + `/getMentions/${id}`)
+                .then(response => {
+                    resolve(response.body.mentions);
+                })
+                .catch((error) => {
+                    store.commit('API_FAIL', error)
+                })
+        })
     }
 };
 

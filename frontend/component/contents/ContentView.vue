@@ -1,7 +1,7 @@
 <template>
     <li class="post">
         <div class="username"><span @click="callSendUsername">{{ username }}</span></div>
-        <div class="contents">
+        <div class="contents" @click="mentions.length > 0 ? checkMentions() : callGetMentions()">
             {{ contents }}
             <span 
                 v-if="image"
@@ -16,12 +16,27 @@
         <div v-if="hasImage && imageOpen">
             <img height="200" :src="imageUrl" />
         </div>
+        <mention-list
+                v-if="mentionOpen"
+                v-for="mention in mentions" 
+                :key="mention.id"
+                :id="mention.id"
+                :contents="mention.contents"
+                :username="mention.username"
+                :createdDate="mention.createdDate"
+                :convertDate="mention.convert_date"
+                :image="mention.image"
+                :mentionIndex="mention.mentionIndex"
+                :mentionDepth="mention.mentionDepth"
+                :imageOpen="false"
+            ></mention-list>
     </li>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import EventBus from '../../service/EventBus'
+import MentionList from './MentionList.vue'
 
 export default {
     name: 'contentView',
@@ -29,6 +44,15 @@ export default {
         "id", "contents", "username", "createdDate", "convertDate", 
         "image", "imageOpen", "mentionIndex", "mentionDepth"
     ],
+    components: {
+        MentionList
+    },
+    data() {
+        return {
+            mentions: [],
+            mentionOpen: false
+        }
+    },
     computed: {
         myPost() {
             return this.$store.getters['account/getUsername'] === this.username
@@ -41,6 +65,22 @@ export default {
         }
     },
     methods: {
+        ...mapActions(
+            'posts', {
+                getMentions: 'getMentions',
+            }
+        ),
+        checkMentions() {
+            this.mentionOpen = (this.mentionOpen == false);
+        },
+        callGetMentions() {
+            this.getMentions(this.id).then(result => {
+                if (result) {
+                    this.mentions = result;
+                    this.mentionOpen = true;
+                }
+            });
+        },
         viewImage() {
             this.imageOpen = this.imageOpen == false
         },
@@ -60,8 +100,7 @@ export default {
                 { 
                     username: this.username,
                     id: this.id,
-                    index: this.mentionIndex,
-                    depth: this.mentionDepth
+                    index: this.mentionIndex
                 }
             )
         }

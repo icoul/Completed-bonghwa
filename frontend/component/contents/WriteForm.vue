@@ -64,7 +64,6 @@ export default {
                 this.post.mentionDepth = 0;
             }
 
-            console.log(this.post)
             // FormData에 데이터 삽입
             const form = new FormData();
             Object.keys(this.post).forEach(key => form.append(key, this.post[key]));
@@ -87,7 +86,6 @@ export default {
         sendUsername(map) {
             this.post.content = `@${map.username} ${this.post.content}`;
             this.post.mentionIndex = (map.index == 0) ? map.id : map.index;
-            this.post.mentionDepth = (map.id == 0) ? 0 : Number(map.depth) + 1;
         },
         mentionCheck() {
             const re = /(@[\w]+ )/;

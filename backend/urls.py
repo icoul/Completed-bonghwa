@@ -35,7 +35,8 @@ urlpatterns = [
     #Posts
     url(r'^getPosts/$', Post.as_view({'get': 'get_posts'})),
     url(r'^sendPost$', Post.as_view({'post': 'send_post'})),
-    url(r'^deletePost/(?P<id>(\d+))$', Post.as_view({'post': 'delete_post'}))
+    url(r'^deletePost/(?P<id>(\d+))$', Post.as_view({'post': 'delete_post'})),
+    url(r'^getMentions/(?P<id>(\d+))$', Post.as_view({'get': 'get_mentions'}))
 ]
 
 if settings.DEBUG:

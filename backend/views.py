@@ -47,6 +47,14 @@ def handle_uploaded_file(f, fname):
         for chunk in f.chunks():
             destination.write(chunk)
 
+#Date타입을 yyyy. mm. dd의 String타입으로 변경
+def convertDateToString(objs):
+    for obj in objs:
+        obj['convert_date'] = obj['createdDate'].strftime("%Y. %m. %d %H:%M:%S")
+        obj['createdDate'] = obj['createdDate'].strftime("%Y%m%d%H%M%S")
+    
+    return objs
+
 class Auth(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
@@ -143,18 +151,19 @@ class Post(viewsets.ModelViewSet):
     @list_route(methods= ['get'])
     def get_posts(self, request):
         posts = list(Contents.objects.filter(deleted=0).order_by('-createdDate').values())
-        
-        #날짜 포맷 String으로 변경
-        for post in posts:
-            post['convert_date'] = post['createdDate'].strftime("%Y. %m. %d %H:%M:%S")
-            post['createdDate'] = post['createdDate'].strftime("%Y%m%d%H%M%S")
 
-        return JsonResponse({'posts': posts})
+        return JsonResponse({'posts': convertDateToString(posts)})
 
     #글 등록
     @list_route(methods= ['post'])
     def send_post(self, request):
         writer = request.session['user']['username']
+        mentionIndex = request.POST['mentionIndex']
+        mentionDepth = 0
+
+        # mentionIndex가 0이 아니라는 것은 해당 글이 멘션이라는 것이므로 depth를 구한다.
+        if mentionIndex:
+            mentionDepth = Contents.objects.filter(deleted=0, mentionIndex=mentionIndex).count() + 1
         
         # 아이디 중복 체크
         if not username_duple_check(writer):
@@ -169,12 +178,12 @@ class Post(viewsets.ModelViewSet):
                 handle_uploaded_file(request.FILES['image'], filename)
             
             try:
-                content = Contents(contents = request.POST['content'],    # 내용
-                                username = writer,                         # 계정명
-                                image = filename,                          # 이미지 이름
-                                mentionIndex = request.POST['mentionIndex'],
-                                mentionDepth = request.POST['mentionDepth'],
-                                createdDate = timezone.now())              # 작성일
+                content = Contents(contents = request.POST['content'],       # 내용
+                                username = writer,                           # 계정명
+                                image = filename,                            # 이미지 이름
+                                mentionIndex = mentionIndex,                 # 멘션번호
+                                mentionDepth = mentionDepth,                 # 멘션순서
+                                createdDate = timezone.now())                # 작성일
                 content.save()
             except Exception as e:
                 print('Send post failed')
@@ -194,3 +203,10 @@ class Post(viewsets.ModelViewSet):
             return JsonResponse({'result': 'false'})            
 
         return JsonResponse({'result': 'true'})
+
+    #글 가져오기
+    @list_route(methods= ['get'])
+    def get_mentions(self, request, id):
+        mentions = list(Contents.objects.filter(deleted=0, mentionIndex=id).order_by('mentionDepth').values())
+
+        return JsonResponse({'mentions': convertDateToString(mentions)})
