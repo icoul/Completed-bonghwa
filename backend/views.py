@@ -17,6 +17,7 @@ from django.utils import timezone
 from hashlib import sha256
 from django.core import serializers
 from django.core.mail import send_mail
+from django.db.models import OuterRef, Subquery, Count, IntegerField
 
 # 초기 페이지
 def index(request):
@@ -150,7 +151,9 @@ class Post(viewsets.ModelViewSet):
     #글 가져오기
     @list_route(methods= ['get'])
     def get_posts(self, request):
-        posts = list(Contents.objects.filter(deleted=0).order_by('-createdDate').values())
+        mentions = Contents.objects.filter(deleted=0, mentionIndex=OuterRef('id')).only('id').values('mentionIndex')
+        mentionCount = mentions.annotate(count=Count('mentionIndex')).values('count')
+        posts = list(Contents.objects.filter(deleted=0).annotate(mentionCount=Subquery(mentionCount, output_field=IntegerField())).order_by('-createdDate').values())
 
         return JsonResponse({'posts': convertDateToString(posts)})
 

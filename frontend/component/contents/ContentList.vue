@@ -12,6 +12,7 @@
                 :image="post.image"
                 :mentionIndex="post.mentionIndex"
                 :mentionDepth="post.mentionDepth"
+                :mentionCount="post.mentionCount"
                 :imageOpen="false"
             ></content-view>
         </ul>

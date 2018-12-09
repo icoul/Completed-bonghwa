@@ -2,10 +2,13 @@
     <li class="post">
         <div class="username"><span @click="callSendUsername">{{ username }}</span></div>
         <div class="contents" @click="mentions.length > 0 ? checkMentions() : callGetMentions()">
-            {{ contents }}
+            <span>{{ contents }}</span>
             <span 
                 v-if="image"
                 @click="viewImage">[이미지]</span>
+            <span
+                v-if="mentionCount"
+            > >>> </span>
         </div>
         <div class="postDate">
             {{ convertDate }}
@@ -42,7 +45,7 @@ export default {
     name: 'contentView',
     props: [
         "id", "contents", "username", "createdDate", "convertDate", 
-        "image", "imageOpen", "mentionIndex", "mentionDepth"
+        "image", "imageOpen", "mentionIndex", "mentionDepth", "mentionCount"
     ],
     components: {
         MentionList
