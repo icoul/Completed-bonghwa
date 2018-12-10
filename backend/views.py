@@ -9,6 +9,7 @@ from .serializer import ContentsSerializer, UserSerializer
 
 from django.core.exceptions import ObjectDoesNotExist
 
+import os
 import uuid
 import string
 import random
@@ -177,7 +178,9 @@ class Post(viewsets.ModelViewSet):
         if form.is_valid():
             filename = ''
             if 'image' in request.FILES:
-                filename = request.FILES['image'].name
+                extention = os.path.splitext(str(request.FILES['image']))[1]
+                now = timezone.now().strftime("%Y%m%d%H%M%S%f")
+                filename = now + extention
                 handle_uploaded_file(request.FILES['image'], filename)
             
             try:

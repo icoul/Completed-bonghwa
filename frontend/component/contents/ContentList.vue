@@ -2,7 +2,7 @@
     <div id="contentList">
         <ul>
             <content-view
-                v-for="post in posts.slice(0, 10)" 
+                v-for="post in posts.slice(0, 20)" 
                 :key="post.id"
                 :id="post.id"
                 :contents="post.contents"
