@@ -77,7 +77,12 @@ export default {
             this.mentionOpen = (this.mentionOpen == false);
         },
         callGetMentions() {
-            this.getMentions(this.id).then(result => {
+            const form = new FormData();
+            form.append("postId", this.id);
+            form.append("mentionIndex", this.mentionIndex);
+            form.append("mentionDepth", this.mentionDepth);
+
+            this.getMentions(form).then(result => {
                 if (result) {
                     this.mentions = result;
                     this.mentionOpen = true;
@@ -102,6 +107,7 @@ export default {
             EventBus.$emit("sendUsername", 
                 { 
                     username: this.username,
+                    contents: this.contents,
                     id: this.id,
                     index: this.mentionIndex
                 }

@@ -1,6 +1,6 @@
 <template>
     <li class="mention">
-        <div class="username"><span @click="callSendUsername">{{ username }}</span></div>
+        <div class="username"><span>{{ username }}</span></div>
         <div class="contents">
             <span>{{ contents }}</span>
             <span 
@@ -37,15 +37,6 @@ export default {
         viewImage() {
             this.imageOpen = this.imageOpen == false
         },
-        callSendUsername() {
-            EventBus.$emit("sendUsername", 
-                { 
-                    username: this.username,
-                    id: this.id,
-                    index: this.mentionIndex
-                }
-            )
-        }
     }
 }
 </script>

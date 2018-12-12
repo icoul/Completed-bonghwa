@@ -33,6 +33,7 @@ export default {
                 content: '',
                 mentionIndex: 0,
                 mentionDepth: 0,
+                mentionId: 0,
                 image: new Object()
             },
             error: '',
@@ -62,6 +63,7 @@ export default {
             if(!this.mentionCheck()) {
                 this.post.mentionIndex = 0;
                 this.post.mentionDepth = 0;
+                this.post.mentionId = 0;
             }
 
             // FormData에 데이터 삽입
@@ -85,7 +87,8 @@ export default {
         },
         sendUsername(map) {
             this.post.content = `@${map.username} ${this.post.content}`;
-            this.post.mentionIndex = (map.index == 0) ? map.id : map.index;
+            this.post.mentionIndex = map.index;
+            this.post.mentionId = map.id;
         },
         mentionCheck() {
             const re = /(@[\w]+ )/;

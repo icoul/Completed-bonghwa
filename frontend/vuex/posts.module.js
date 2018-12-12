@@ -46,9 +46,9 @@ const actions = {
                 })
         })
     },
-    getMentions (store, id) {
+    getMentions (store, form) {
         return new Promise((resolve, reject) => {
-            api.get(apiRoot + `/getMentions/${id}`)
+            api.post(apiRoot + `/getMentions`, form)
                 .then(response => {
                     resolve(response.body.mentions);
                 })

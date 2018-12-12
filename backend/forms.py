@@ -5,3 +5,8 @@ class UploadFileForm(forms.Form):
     image = forms.FileField(required=False)
     mentionIndex = forms.IntegerField(required=False)
     mentionDepth = forms.IntegerField(required=False)
+
+class mentionForm(forms.Form):
+    postId = forms.IntegerField(required=False)
+    mentionIndex = forms.IntegerField(required=False)
+    mentionDepth = forms.IntegerField(required=False)

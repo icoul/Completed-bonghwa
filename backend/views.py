@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 
-from .forms import UploadFileForm
+from .forms import UploadFileForm, mentionForm
 from .models import Contents, User
 from .serializer import ContentsSerializer, UserSerializer
 
@@ -18,7 +18,7 @@ from django.utils import timezone
 from hashlib import sha256
 from django.core import serializers
 from django.core.mail import send_mail
-from django.db.models import OuterRef, Subquery, Count, IntegerField
+from django.db.models import OuterRef, Subquery, Count, IntegerField, Q
 
 # 초기 페이지
 def index(request):
@@ -152,9 +152,7 @@ class Post(viewsets.ModelViewSet):
     #글 가져오기
     @list_route(methods= ['get'])
     def get_posts(self, request):
-        mentions = Contents.objects.filter(deleted=0, mentionIndex=OuterRef('id')).only('id').values('mentionIndex')
-        mentionCount = mentions.annotate(count=Count('mentionIndex')).values('count')
-        posts = list(Contents.objects.filter(deleted=0).annotate(mentionCount=Subquery(mentionCount, output_field=IntegerField())).order_by('-createdDate').values())
+        posts = list(Contents.objects.filter(deleted=0).order_by('-createdDate').values())
 
         return JsonResponse({'posts': convertDateToString(posts)})
 
@@ -162,12 +160,21 @@ class Post(viewsets.ModelViewSet):
     @list_route(methods= ['post'])
     def send_post(self, request):
         writer = request.session['user']['username']
+        mentionId = request.POST['mentionId']
         mentionIndex = request.POST['mentionIndex']
         mentionDepth = 0
 
         # mentionIndex가 0이 아니라는 것은 해당 글이 멘션이라는 것이므로 depth를 구한다.
         if mentionIndex:
-            mentionDepth = Contents.objects.filter(deleted=0, mentionIndex=mentionIndex).count() + 1
+            query = Contents.objects.filter(deleted=0, mentionIndex=mentionIndex)
+
+            if query.latest('mentionDepth').id == mentionId:
+                mentionDepth = query.count() + 1
+            else:
+                mentionIndex = mentionId
+                mentionDepth = 1
+        else:
+            mentionIndex = mentionId
         
         # 아이디 중복 체크
         if not username_duple_check(writer):
@@ -211,8 +218,30 @@ class Post(viewsets.ModelViewSet):
         return JsonResponse({'result': 'true'})
 
     #글 가져오기
-    @list_route(methods= ['get'])
-    def get_mentions(self, request, id):
-        mentions = list(Contents.objects.filter(deleted=0, mentionIndex=id).order_by('mentionDepth').values())
+    @list_route(methods= ['post'])
+    def get_mentions(self, request):
+        form = mentionForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            mentionIndex = request.POST['mentionIndex']
+            mentionDepth = request.POST['mentionDepth']
+            mentions = []
+
+            #mentionIndex가 0이면 최초의 post이기 때문에 루프를 하지 않음
+            while mentionIndex != '0':
+                #해당되는 mention보다 낮은 depth의 post들을 조회
+                mention = list(Contents.objects\
+                    .filter(Q(deleted=0) & \
+                        ((Q(mentionIndex=mentionIndex) & Q(mentionDepth__lt=mentionDepth)) | \
+                        Q(id=mentionIndex))).order_by('-createdDate').values())
+                
+                #list에 추가
+                mentions.extend(mention)
+                #해당 mention의 최초시점인 post를 조회
+                parentPost = Contents.objects.get(id=mentionIndex)
+
+                #최초의 post가 가진 mentionIndex와 Depth로 교체.
+                mentionIndex = parentPost.mentionIndex
+                mentionDepth = parentPost.mentionDepth
 
         return JsonResponse({'mentions': convertDateToString(mentions)})
