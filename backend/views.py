@@ -162,15 +162,18 @@ class Post(viewsets.ModelViewSet):
         writer = request.session['user']['username']
         mentionId = request.POST['mentionId']
         mentionIndex = request.POST['mentionIndex']
-        mentionDepth = 0
+        mentionDepth = request.POST['mentionDepth']
 
         # mentionIndex가 0이 아니라는 것은 해당 글이 멘션이라는 것이므로 depth를 구한다.
         if mentionIndex:
             query = Contents.objects.filter(deleted=0, mentionIndex=mentionIndex)
 
-            if query.latest('mentionDepth').id == mentionId:
-                mentionDepth = query.count() + 1
+            #mentionIndex가 같은 post 중 선택한 mention의 depth가 최상위일 경우
+            if query.latest('mentionDepth').mentionDepth == mentionDepth:
+                #해당 depth에 +1을 해주어 depth를 쌓아간다.
+                mentionDepth = int(mentionDepth) + 1
             else:
+                #최상위가 아닐 경우 새로운 가지를 만들기 위해 해당 mention의 id를 index로 넣어준다.
                 mentionIndex = mentionId
                 mentionDepth = 1
         else:

@@ -86,8 +86,17 @@ export default {
             this.post.image = files[0];
         },
         sendUsername(map) {
-            this.post.content = `@${map.username} ${this.post.content}`;
+            let target = map.contents.replace(`@${map.username}`, '').match(/(@\S+)/g);
+
+            if (target == null) {
+                target = '';
+            } else {
+                target = target.join(' ')
+            }
+
+            this.post.content = `@${map.username} ${target} ${this.post.content}`;
             this.post.mentionIndex = map.index;
+            this.post.mentionDepth = map.depth;
             this.post.mentionId = map.id;
         },
         mentionCheck() {

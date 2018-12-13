@@ -109,7 +109,8 @@ export default {
                     username: this.username,
                     contents: this.contents,
                     id: this.id,
-                    index: this.mentionIndex
+                    index: this.mentionIndex,
+                    depth: this.mentionDepth
                 }
             )
         }
