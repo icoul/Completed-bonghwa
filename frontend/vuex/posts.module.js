@@ -4,6 +4,7 @@ import router from '../router'
 const apiRoot = 'http://localhost:8000'
 
 const state = {
+    page: 1,
     post: {},
     posts: [],
     linkPosts: {}
@@ -11,7 +12,12 @@ const state = {
 
 const mutations = {
     'SET_POST': function (state, response) {
-        state.posts = response.body.posts;
+        response.body.posts.forEach(post => {
+            state.posts.push(post);
+        });
+    },
+    'ADD_PAGE': function (state) {
+        state.page++;
     },
     'API_FAIL': function (state, error) {
         console.log(error);
@@ -20,9 +26,22 @@ const mutations = {
 
 const actions = {
     getPosts (store) {
-        api.get(apiRoot + '/getPosts/')
+        api.get(apiRoot + `/getPosts/${state.page}`)
             .then((response) => store.commit('SET_POST', response))
             .catch((error) => store.commit('API_FAIL', error))
+    },
+    addPosts (store) {
+        store.commit('ADD_PAGE');
+        return new Promise((resolve, reject) => {
+            api.get(apiRoot + `/getPosts/${state.page}`)
+                .then(response => {
+                    store.commit('SET_POST', response)
+                    resolve(true);
+                })
+                .catch((error) => {
+                    store.commit('API_FAIL', error)
+                })
+        })
     },
     sendPost (store, form) {
         return new Promise((resolve, reject) => {

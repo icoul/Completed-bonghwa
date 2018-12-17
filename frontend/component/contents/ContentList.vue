@@ -2,7 +2,7 @@
     <div id="contentList">
         <ul>
             <content-view
-                v-for="post in posts.slice(0, 20)" 
+                v-for="post in posts" 
                 :key="post.id"
                 :id="post.id"
                 :contents="post.contents"
@@ -37,8 +37,32 @@ export default {
         ...mapActions(
             'posts', {
                 getPosts: 'getPosts',
+                addPosts: 'addPosts'
             }
         ),
+        scrollHandler(event) {
+            window.removeEventListener('scroll', this.scrollHandler);
+            var s = window.pageYOffset
+            var h = window.innerHeight
+            var b = document.documentElement.scrollHeight
+            
+            if (Math.floor(s) + h > b - 2){
+                this.addPosts().then(valid => {
+                    if (valid) {
+                        window.addEventListener('scroll', this.scrollHandler);        
+                    }
+                });
+            } else {
+                window.addEventListener('scroll', this.scrollHandler);
+            }
+        }
     },
+    created() {
+        // 스크롤 이벤트 등록
+        window.addEventListener('scroll', this.scrollHandler);
+    },
+    destroyed() {
+        window.removeEventListener('scroll', this.scrollHandler);
+    }
 }
 </script>

@@ -30,11 +30,9 @@ export default {
                 setUserFromServer: 'setUserFromServer'
             }
         ),
-        sendMention(username) {
-            alert(username);
-        }
     },
     created() {
+        // 로그인 여부 체크
         this.setUserFromServer().then(valid => {
             if(valid) {
                 this.$refs.content.getPosts();
@@ -42,6 +40,6 @@ export default {
                 this.$router.push('login');
             }
         });
-    },
+    }
 }
 </script>

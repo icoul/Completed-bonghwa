@@ -151,8 +151,10 @@ class Auth(viewsets.ModelViewSet):
 class Post(viewsets.ModelViewSet):
     #글 가져오기
     @list_route(methods= ['get'])
-    def get_posts(self, request):
-        posts = list(Contents.objects.filter(deleted=0).order_by('-createdDate').values())
+    def get_posts(self, request, page):
+        minPage = (int(page) - 1) * 50
+        maxPage = int(page) * 50
+        posts = list(Contents.objects.filter(deleted=0).order_by('-createdDate').values()[minPage:maxPage])
 
         return JsonResponse({'posts': convertDateToString(posts)})
 
