@@ -1,5 +1,6 @@
 <template>
     <div id="main">
+        <main-header ref="header"></main-header>
         <write-form ref="writer"></write-form>
         <content-list ref="content"></content-list>
         <button @click="callLogout">로그아웃</button>
@@ -8,14 +9,16 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import MainHeader from './MainHeader.vue'
 import WriteForm from './contents/WriteForm.vue'
 import ContentList from './contents/ContentList.vue'
 
 export default {
     name: 'main',
     components: {
+        MainHeader,
         WriteForm,
-        ContentList
+        ContentList,
     },
     computed: {
         ...mapState({

@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^signUp/(?P<username>\w+)/(?P<password>([\W\w]+))/(?P<email>([\w]+@[\w]+.[\w]+))$', Auth.as_view({'post': 'signUp'})),
     url(r'^findPass/(?P<username>\w+)/(?P<email>([\w]+@[\w]+.[\w]+))$', Auth.as_view({'post': 'find_pass'})),
     #Posts
-    url(r'^getPosts/(?P<page>(\d+))/$', Post.as_view({'get': 'get_posts'})),
+    url(r'^getPosts/(?P<page>(\d+))/(?P<sortOption>(\w+))/$', Post.as_view({'get': 'get_posts'})),
     url(r'^sendPost$', Post.as_view({'post': 'send_post'})),
     url(r'^deletePost/(?P<id>(\d+))$', Post.as_view({'post': 'delete_post'})),
     url(r'^getMentions$', Post.as_view({'post': 'get_mentions'}))

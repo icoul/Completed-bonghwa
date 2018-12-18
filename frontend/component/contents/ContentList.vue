@@ -21,6 +21,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import EventBus from '../../service/EventBus'
 import ContentView from './ContentView.vue'
 
 export default {
@@ -37,7 +38,8 @@ export default {
         ...mapActions(
             'posts', {
                 getPosts: 'getPosts',
-                addPosts: 'addPosts'
+                addPosts: 'addPosts',
+                sortPosts: 'sortPosts'
             }
         ),
         scrollHandler(event) {
@@ -55,13 +57,16 @@ export default {
             } else {
                 window.addEventListener('scroll', this.scrollHandler);
             }
-        }
+        },
     },
     created() {
         // 스크롤 이벤트 등록
         window.addEventListener('scroll', this.scrollHandler);
+        // 이벤트 버스 등록
+        EventBus.$on('sortPosts', this.sortPosts);
     },
     destroyed() {
+        // 스크롤 이벤트 제거
         window.removeEventListener('scroll', this.scrollHandler);
     }
 }

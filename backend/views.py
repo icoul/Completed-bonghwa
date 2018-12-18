@@ -43,20 +43,6 @@ def pass_generator(size=6):
 def encrypt_string(value):
     return sha256(value.encode()).hexdigest()
 
-#파일 업로드
-def handle_uploaded_file(f, fname):
-    with open('./static/image/' + fname, 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
-
-#Date타입을 yyyy. mm. dd의 String타입으로 변경
-def convertDateToString(objs):
-    for obj in objs:
-        obj['convert_date'] = obj['createdDate'].strftime("%Y. %m. %d %H:%M:%S")
-        obj['createdDate'] = obj['createdDate'].strftime("%Y%m%d%H%M%S")
-    
-    return objs
-
 class Auth(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
@@ -148,17 +134,46 @@ class Auth(viewsets.ModelViewSet):
 
         return JsonResponse({'result': '1', 'message': '임시 비밀번호를 이메일로 발송했습니다.'})
 
+#모든 포스트를 가져온다
+def get_all_post(minPage, maxPage, username):
+    return list(Contents.objects.filter(deleted=0).order_by('-createdDate').values()[minPage:maxPage])
+
+#나에게 온 멘션만 가져온다
+def get_mentions(minPage, maxPage, username):
+    return list(Contents.objects.filter(deleted=0, mentionIndex=0).order_by('-createdDate').values()[minPage:maxPage])
+    
+#내가 작성한 포스트만 가져온다
+def get_my_post(minPage, maxPage, username):
+    return list(Contents.objects.filter(deleted=0, username=username).order_by('-createdDate').values()[minPage:maxPage])
+
+#파일 업로드
+def handle_uploaded_file(f, fname):
+    with open('./static/image/' + fname, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+#Date타입을 yyyy. mm. dd의 String타입으로 변경
+def convertDateToString(objs):
+    for obj in objs:
+        obj['convert_date'] = obj['createdDate'].strftime("%Y. %m. %d %H:%M:%S")
+        obj['createdDate'] = obj['createdDate'].strftime("%Y%m%d%H%M%S")
+    
+    return objs
+
 class Post(viewsets.ModelViewSet):
-    #글 가져오기
+    #포스트 가져오기
     @list_route(methods= ['get'])
-    def get_posts(self, request, page):
-        minPage = (int(page) - 1) * 50
-        maxPage = int(page) * 50
-        posts = list(Contents.objects.filter(deleted=0).order_by('-createdDate').values()[minPage:maxPage])
+    def get_posts(self, request, page, sortOption):
+        #조회용 함수맵(전체, 멘션, 자신)
+        functions = {'all': get_all_post, 'mention': get_mentions, 'my': get_my_post}
+        username = request.session['user']['username']
+        minPage = (int(page) - 1) * 50 #해당 페이지 최소번호
+        maxPage = int(page) * 50 #해당 페이지 최대번호
+        posts = functions[sortOption](minPage, maxPage, username) #포스트 조회
 
         return JsonResponse({'posts': convertDateToString(posts)})
 
-    #글 등록
+    #포스트 등록
     @list_route(methods= ['post'])
     def send_post(self, request):
         writer = request.session['user']['username']
@@ -166,7 +181,7 @@ class Post(viewsets.ModelViewSet):
         mentionIndex = request.POST['mentionIndex']
         mentionDepth = request.POST['mentionDepth']
 
-        # mentionIndex가 0이 아니라는 것은 해당 글이 멘션이라는 것이므로 depth를 구한다.
+        # mentionIndex가 0이 아니라는 것은 해당 포스트이 멘션이라는 것이므로 depth를 구한다.
         if mentionIndex:
             query = Contents.objects.filter(deleted=0, mentionIndex=mentionIndex)
 
@@ -210,7 +225,7 @@ class Post(viewsets.ModelViewSet):
 
         return JsonResponse({'result': '1', 'message': ''})
 
-    #글 삭제
+    #포스트 삭제
     @list_route(methods= ['post'])
     def delete_post(self, request, id):
         try:
@@ -222,7 +237,7 @@ class Post(viewsets.ModelViewSet):
 
         return JsonResponse({'result': 'true'})
 
-    #글 가져오기
+    #포스트 가져오기
     @list_route(methods= ['post'])
     def get_mentions(self, request):
         form = mentionForm(request.POST, request.FILES)

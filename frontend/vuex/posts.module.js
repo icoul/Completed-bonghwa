@@ -5,6 +5,7 @@ const apiRoot = 'http://localhost:8000'
 
 const state = {
     page: 1,
+    option: 'all',
     post: {},
     posts: [],
     linkPosts: {}
@@ -19,6 +20,13 @@ const mutations = {
     'ADD_PAGE': function (state) {
         state.page++;
     },
+    'INIT_POST_OPTION': function (state, option) {
+        state.option = option;
+        state.page = 1;
+    },
+    'INIT_POST': function (state, response) {
+        state.posts = response.body.posts;
+    },
     'API_FAIL': function (state, error) {
         console.log(error);
     }
@@ -26,14 +34,14 @@ const mutations = {
 
 const actions = {
     getPosts (store) {
-        api.get(apiRoot + `/getPosts/${state.page}`)
+        api.get(apiRoot + `/getPosts/${state.page}/${state.option}`)
             .then((response) => store.commit('SET_POST', response))
             .catch((error) => store.commit('API_FAIL', error))
     },
     addPosts (store) {
         store.commit('ADD_PAGE');
         return new Promise((resolve, reject) => {
-            api.get(apiRoot + `/getPosts/${state.page}`)
+            api.get(apiRoot + `/getPosts/${state.page}/${state.option}`)
                 .then(response => {
                     store.commit('SET_POST', response)
                     resolve(true);
@@ -59,6 +67,19 @@ const actions = {
             api.post(apiRoot + `/deletePost/${id}`)
                 .then(response => {
                     resolve(response.body.result);
+                })
+                .catch((error) => {
+                    store.commit('API_FAIL', error)
+                })
+        })
+    },
+    sortPosts (store, option) {
+        store.commit('INIT_POST_OPTION', option);
+        return new Promise((resolve, reject) => {
+            api.get(apiRoot + `/getPosts/${state.page}/${state.option}`)
+                .then(response => {
+                    store.commit('INIT_POST', response)
+                    resolve(true);
                 })
                 .catch((error) => {
                     store.commit('API_FAIL', error)
