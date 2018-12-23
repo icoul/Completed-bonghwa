@@ -42,6 +42,6 @@ export default {
 </script>
 
 <style>
-    .post .mention {padding-left: 50px; background: #ddd;}
-    .post .mention .contents {width: 650px;}
+    .post li.mention {padding-left: 50px; background: #ddd;}
+    .post li.mention .contents {width: 650px;}
 </style>

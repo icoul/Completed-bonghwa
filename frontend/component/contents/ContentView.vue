@@ -1,14 +1,13 @@
 <template>
     <li class="post">
-        <div class="username"><span @click="callSendUsername">{{ username }}</span></div>
+        <div class="username"><span @click="isSecret ? sendSecret() : sendUsername()">{{ username }}</span></div>
         <div class="contents" @click="mentions.length > 0 ? checkMentions() : callGetMentions()">
-            <span>{{ contents }}</span>
-            <span 
+            <div 
+                :class="{ 'secret' : isSecret }"
+                v-html="boldContents"></div>
+            <div 
                 v-if="image"
-                @click="viewImage">[이미지]</span>
-            <span
-                v-if="mentionCount"
-            > >>> </span>
+                @click="viewImage">[이미지]</div>
         </div>
         <div class="postDate">
             {{ convertDate }}
@@ -57,6 +56,27 @@ export default {
         }
     },
     computed: {
+        boldContents() {
+            const target = this.contents.match(/(@\S+)/g);
+            let boldContents = this.contents;
+
+            if (target == null) {
+                return boldContents;
+            }
+
+            target.forEach(username => {
+                boldContents = boldContents.replace(username, `<span class="mention">${username}</span>`);
+            });
+
+            return boldContents
+        },
+        isSecret() {
+            if (this.contents[0] != '!') {
+                return false
+            }
+
+            return true
+        },
         myPost() {
             return this.$store.getters['account/getUsername'] === this.username
         },
@@ -103,11 +123,21 @@ export default {
                 });     
             }
         },
-        callSendUsername() {
+        sendUsername() {
             EventBus.$emit("sendUsername", 
                 { 
                     username: this.username,
                     contents: this.contents,
+                    id: this.id,
+                    index: this.mentionIndex,
+                    depth: this.mentionDepth
+                }
+            )
+        },
+        sendSecret() {
+            EventBus.$emit("sendSecret", 
+                { 
+                    username: this.username,
                     id: this.id,
                     index: this.mentionIndex,
                     depth: this.mentionDepth
@@ -123,4 +153,7 @@ export default {
     .post .username {float: left; width: 100px;}
     .post .username span:hover {color: blue; text-decoration: underline; cursor: pointer;}
     .post .contents {float: left; width: 700px;}
+    .post .contents div {float: left;}
+    .post .contents div.secret {color: grey;}
+    .post .contents div span {font-weight: bold;}
 </style>

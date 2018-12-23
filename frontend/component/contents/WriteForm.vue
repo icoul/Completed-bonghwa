@@ -41,6 +41,7 @@ export default {
     },
     created() {
         EventBus.$on('sendUsername', this.sendUsername);
+        EventBus.$on('sendSecret', this.sendSecret);
     },
     methods: {
         ...mapActions(
@@ -98,10 +99,21 @@ export default {
             this.post.mentionIndex = map.index;
             this.post.mentionDepth = map.depth;
             this.post.mentionId = map.id;
+
+            window.scrollTo(0, 0);
+        },
+        sendSecret(map) {
+            this.post.content = `!${map.username} ${this.post.content}`;
+            this.post.mentionIndex = map.index;
+            this.post.mentionDepth = map.depth;
+            this.post.mentionId = map.id;
+
+            window.scrollTo(0, 0);
         },
         mentionCheck() {
-            const re = /(@[\w]+ )/;
-            return re.exec(this.post.content)
+            const mention = /(@[\w]+ )/;
+            const secret = /(^!\S+ )/;
+            return mention.exec(this.post.content) || secret.exec(this.post.content)
         }
     },
 }

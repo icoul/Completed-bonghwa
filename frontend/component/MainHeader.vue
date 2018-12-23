@@ -8,6 +8,8 @@
                     @click="sortContents('mention')">멘션만 보기</li>
                 <li :class="{ 'on' : sortOption == 'my' }" 
                     @click="sortContents('my')">내 포스트 보기</li>
+                <li :class="{ 'on' : sortOption == 'secret' }" 
+                    @click="sortContents('secret')">비밀 멘션 보기</li>
             </ul>
         </div>
         <div class="rightHeader">

@@ -136,16 +136,29 @@ class Auth(viewsets.ModelViewSet):
 
 #모든 포스트를 가져온다
 def get_all_post(minPage, maxPage, username):
-    return list(Contents.objects.filter(deleted=0).order_by('-createdDate').values()[minPage:maxPage])
+    return list(Contents.objects.filter(Q(deleted=0), \
+        (Q(contents__startswith='!') & Q(username=username)) | \
+        Q(contents__startswith='!%s ' % username) | \
+        ~Q(contents__startswith='!'))
+        .order_by('-createdDate').values()[minPage:maxPage])
 
 #나에게 온 멘션만 가져온다
 def get_mentions(minPage, maxPage, username):
-    return list(Contents.objects.filter(deleted=0, contents__contains=username)\
+    return list(Contents.objects.filter(Q(deleted=0), \
+        Q(contents__contains=username), \
+        ~Q(contents__startswith='!')) \
         .order_by('-createdDate').values()[minPage:maxPage])
     
 #내가 작성한 포스트만 가져온다
 def get_my_post(minPage, maxPage, username):
     return list(Contents.objects.filter(deleted=0, username=username).order_by('-createdDate').values()[minPage:maxPage])
+
+#나에게 온 또는 내가 보낸 비밀멘션만 가져온다
+def get_secret_mention(minPage, maxPage, username):
+    return list(Contents.objects.filter(Q(deleted=0), \
+        (Q(contents__startswith='!') & Q(username=username)) | \
+        Q(contents__startswith='!%s ' % username)) \
+        .order_by('-createdDate').values()[minPage:maxPage])
 
 #파일 업로드
 def handle_uploaded_file(f, fname):
@@ -166,7 +179,10 @@ class Post(viewsets.ModelViewSet):
     @list_route(methods= ['get'])
     def get_posts(self, request, page, sortOption):
         #조회용 함수맵(전체, 멘션, 자신)
-        functions = {'all': get_all_post, 'mention': get_mentions, 'my': get_my_post}
+        functions = {'all': get_all_post, \
+            'mention': get_mentions, \
+            'my': get_my_post, \
+            'secret': get_secret_mention}
         username = request.session['user']['username']
         minPage = (int(page) - 1) * 50 #해당 페이지 최소번호
         maxPage = int(page) * 50 #해당 페이지 최대번호

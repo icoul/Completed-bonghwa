@@ -34,8 +34,10 @@ const mutations = {
 
 const actions = {
     getPosts (store) {
+        store.commit('INIT_POST_OPTION', state.option);
+
         api.get(apiRoot + `/getPosts/${state.page}/${state.option}`)
-            .then((response) => store.commit('SET_POST', response))
+            .then((response) => store.commit('INIT_POST', response))
             .catch((error) => store.commit('API_FAIL', error))
     },
     addPosts (store) {
