@@ -140,7 +140,8 @@ def get_all_post(minPage, maxPage, username):
 
 #나에게 온 멘션만 가져온다
 def get_mentions(minPage, maxPage, username):
-    return list(Contents.objects.filter(deleted=0, mentionIndex=0).order_by('-createdDate').values()[minPage:maxPage])
+    return list(Contents.objects.filter(deleted=0, contents__contains=username)\
+        .order_by('-createdDate').values()[minPage:maxPage])
     
 #내가 작성한 포스트만 가져온다
 def get_my_post(minPage, maxPage, username):
