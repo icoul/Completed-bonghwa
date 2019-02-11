@@ -49,6 +49,7 @@ class Auth(viewsets.ModelViewSet):
     #로그인 상태 체크용 토큰 조회
     @list_route(method = ['get'])
     def get_user(self, request):
+        print(request.session.keys())
         if (not 'user' in request.session):
             request.session['user'] = {}
 
