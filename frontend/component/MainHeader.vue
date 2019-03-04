@@ -32,6 +32,10 @@ export default {
         sortContents(option) {
             this.sortOption = option;
             EventBus.$emit('sortPosts', option);
+
+            socket.send(JSON.stringify({
+                'message': 'aaa'
+            }));
         }
     }
 }
